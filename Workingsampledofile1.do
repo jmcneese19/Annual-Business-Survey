@@ -97,18 +97,13 @@ preserve
 *If I had programs that needed to be installed	
 
 ///////////////////////////////////////Pull and Clean (Part1)
-
 use "https://github.com/jmcneese19/DISS/blob/main/abspart1.dta?raw=true", clear
+*Part 1 Sample Upload from git hub
 //import delimited C:\Users\Jazmyne\Desktop\Stata\DISS\ABSpart1.csv, varnames(1) rowrange(3)
-*load from git hub
 
 des
 sum
 gen case_id = _n
-
-ren firmpdemp empfirm
-lab var empfirm "Number of employer firms"
-destring empfirm, generate(empfirmN) ignore("$ ,%")
 
 encode naics2017_label, gen(nacislN) 
 encode sex_label, gen(sexlN)
@@ -118,6 +113,7 @@ encode vet_group_label, gen(vetglN)
 encode rcppdemp, gen(revbythoN)
 encode emp, gen(numempN)
 encode payann, gen(annpaybythoN)
+encode firmpdemp, gen(empfirmN)
 
 drop geo_id
 drop geo_id_f
@@ -137,7 +133,6 @@ drop firmpdemp_s
 drop rcppdemp_s
 drop emp_s 
 drop payann_s
-
 drop naics2017_label
 drop sex_label
 drop eth_group_label
@@ -146,21 +141,82 @@ drop vet_group_label
 drop rcppdemp
 drop emp
 drop payann
+drop firmpdemp
 
 des
 sum
 save abspart1clean.dta, replace
+clear
+
+//////////////////////////////////////////Pull and Clean (Part2)
+//use "https://github.com/jmcneese19/DISS/blob/main/abspart2clean.dta?raw=true", clear
+*Part 2 Sample Upload from git hub
+import delimited C:\Users\Jazmyne\Desktop\Stata\DISS\ABSpart2.csv, varnames(1) rowrange(3)
+ 
+des
+sum
+ 
+encode owner_sex_label, gen(ownsexlN) 
+encode owner_eth_label, gen(ownethlN) 
+encode owner_race_label, gen(ownraclN) 
+encode owner_vet_label, gen(ownvetlN)
+encode qdesc_label, gen(qdesclN) 
+encode ownchar_label, gen(owncharlN)
+encode ownpdemp_pct, gen(ownemppctN)
+encode ownpdemp, gen(ownempN)
+
+drop geo_id 
+drop geo_id_f 
+drop naics2017_f 
+drop year  
+drop name 
+drop naics2017 
+drop naics2017_label 
+drop indgroup 
+drop subsector 
+drop sector 
+drop indlevel 
+drop owner_sex 
+drop owner_eth 
+drop owner_race 
+drop owner_vet 
+drop qdesc 
+drop ownchar 
+drop owner_sex_label 
+drop owner_eth_label 
+drop owner_race_label 
+drop owner_vet_label 
+drop qdesc_label 
+drop ownchar_label
+drop ownpdemp_pct
+drop ownpdemp_s 
+drop ownpdemp_pct_s 
+drop ownpdemp 
+
+des
+sum
+save abspart2clean.dta, replace
+clear
+ 
+///////////////////////////////////////////Merge Part 1 & Part 2
+use abspart1clean.dta
+append using abspart2clean.dta
+
+save abs12clean.dta, replace
+clear
 
 ////////////////////////////////////////// Descriptive program
-use "https://github.com/jmcneese19/DISS/blob/main/abspart1clean.dta?raw=true", clear
-*Part 1 Sample upload
+//use "https://github.com/jmcneese19/DISS/blob/main/abs12clean.dta?raw=true", clear
+use "abs12clean.dta"
+*mereges sample upload
 
 des
 
 codebook 
 
-tab racecode 
+tab racglN sexlN 
 * black = 40 White= 30 
+*1= total 2=feamle 3=male 4 equally male female 
 
 
 *revbythoN = revenue by the thousands 
