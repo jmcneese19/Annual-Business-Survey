@@ -99,7 +99,6 @@ preserve
 ///////////////////////////////////////Pull and Clean (Part1)
 use "https://github.com/jmcneese19/DISS/blob/main/abspart1.dta?raw=true", clear
 *Part 1 Sample Upload from git hub
-//import delimited C:\Users\Jazmyne\Desktop\Stata\DISS\ABSpart1.csv, varnames(1) rowrange(3)
 
 des
 sum
@@ -147,6 +146,7 @@ des
 sum
 save abspart1clean.dta, replace
 clear
+
 
 //////////////////////////////////////////Pull and Clean (Part2)
 //use "https://github.com/jmcneese19/DISS/blob/main/abspart2clean.dta?raw=true", clear
@@ -198,6 +198,7 @@ sum
 save abspart2clean.dta, replace
 clear
  
+ 
 ///////////////////////////////////////////Merge Part 1 & Part 2
 use abspart1clean.dta
 append using abspart2clean.dta
@@ -205,86 +206,46 @@ append using abspart2clean.dta
 save abs12clean.dta, replace
 clear
 
-////////////////////////////////////////// Descriptive program
-//use "https://github.com/jmcneese19/DISS/blob/main/abs12clean.dta?raw=true", clear
-use "abs12clean.dta"
-*mereges sample upload
+
+////////////////////////////////////////// Recoding and Cleaning
+use "https://github.com/jmcneese19/DISS/blob/main/abs12clean.dta?raw=true", clear
+*upload mereged sample 
 
 des
+* descirptive stats
 
 codebook 
+* assess the variables and what they mean
 
-tab racglN sexlN 
-* black = 40 White= 30 
-*1= total 2=feamle 3=male 4 equally male female 
+duplicates list
+*This command tells you what values in your data are duplicates 
 
-
-*revbythoN = revenue by the thousands 
-*sex = 1 total 2 female 3 male 4 Equally male female 96 classifiable 98 unclassifiable 
-*sectorcode = 72 Accommodation and food services  53 realestate   0 all 
-
-////////////////////////////////////END//////////////////////////////////////////
+unique revbythoN
+* the command you use to identify what the unique values are in your data 
+*and the total amount of bervations 
 
 
+////////////////////////////////////////// Descriptives program
+tab racglN sexlN
+*looking at the relationhsio between sex and race in my dataset
 
-
-
-
-/*
-
-//////////////////////////////////////// General Descritives program to pull from 
-des [var-name]
-* descirptive stats 
-
-sum [var-name]
-*summary stats
-
-scatter [var-name] [var-name]
+scatter 
 *scatter plot
 
-hist [var-name]
+hist 
 *histogram
 
-sum [var-name], detail 
+sum
+*summary stats
+
+sum [], detail 
 *detailed summary 
 
-histogram [var-name], freq
+histogram [], freq
 *histogram based on frequency
 
-//Note that Stata output will appear jumbled unless you use a fixed width font, 
-such as Courier New. A font size of 9 will keep the lines from breaking.
+reg  
+* run bivarite regression
 
-// run summary stats detailed and non 
-sum 
-sum pe, detail 
-
-// run histrogram 
-histogram per, freq
-
-// 4. Run simple bivariate regression on (dont forget to change varible)
-reg juvenile_1 four_day 
-
-// 5. Run same regression, but add district and year FEs  (dont forget to change variable)
 areg j fo i.year, absorb(id) vce(cluster id) 
-
- // 6. unique ->the command you use to identify what the unique values are in your data and the otal amount of bervations 
-example:
-Unique codist
-Number of unique values of codist is  538
-Number of records is  4184
-
-//7. Duplicats lst- This command tells you what values in your data are duplicates 
-. duplicates list codist year
-
-Duplicates in terms of codist year
-
-(0 observations are duplicates)
-
-//8. this command tells you to look for a certain dirtitc id in this case (codist)
-.  browse if codist == "10I027"
-
-//9. This command tells you to look for a certain ditriyc id and the years it associates with 
-. . browse if codist == "10I027" & year==20
-
-
-*/ 
+*Run same regression, but add district and year FEs  
